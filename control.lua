@@ -3,13 +3,13 @@ local function insert_to_best_inventory(stack, entity)
   success = false
   
   -- Best case, if this is an assembler, just try and put it back into the output.
-  -- Note to self: Always make power core recipes include a 0% experimental and unstable core as output.
+  -- Note to self: Always make sure relevant recipes include a 0% probability of all possible results
   if source.get_output_inventory() then
     inventory = source.get_output_inventory()
     inserted = inventory.insert(result)
 
     if inserted > 0 then
-      game.print("Inserted " .. " into output")
+      game.print("Inserted " .. stack.name .. " into output")
     end
 
     if inserted == stack.count then
@@ -21,14 +21,14 @@ local function insert_to_best_inventory(stack, entity)
 
   if not success then
     -- loop through inventories in reverse order, this should in theory insert to the "correct" inventories first
-    -- but lol it never does.
+    -- but so far this branch never seems to do anything (either above output inventory works or nothing)
     for i = 0, entity.get_max_inventory_index() - 1 do 
       inventory = source.get_inventory(source.get_max_inventory_index() - i)
       if inventory then            
         inserted = inventory.insert(result)
 
         if inserted > 0 then
-          game.print("Inserted " .. " into slot " .. source.get_max_inventory_index() - i)
+          game.print("Inserted " .. stack.name .. " into slot " .. source.get_max_inventory_index() - i)
         end
         
         -- future proofing; account for stack sizes higher than one
@@ -43,16 +43,20 @@ local function insert_to_best_inventory(stack, entity)
   end
 
   if not success then
-    -- last ditch effort
+    -- last ditch effort, also never seems to insert anything
     inserted = source.insert(stack)
     
     if inserted > 0 then
-      game.print("Inserted " .. " ... somewhere")
+      game.print("Inserted " .. stack.name .. " ...somewhere")
     end
 
     if inserted == stack.count then
       success = true
     end
+  end
+
+  if not success then
+    game.print("Correga - Bug warning: Could not output all " .. stack.name .. " to any inventory in " .. source.name)        
   end
 
   return success
@@ -71,10 +75,7 @@ local function handle_script_trigger_event(event)
     if event.source_entity then 
       source = event.source_entity
       game.print("Power Core Result spoiled in an entity!")
-      success = insert_to_best_inventory(result, source)
-      if not success then
-          game.print("Correga - Bug warning: Could not output all " .. result.name .. " to any inventory in " .. source.name .. ", so spilled it on the ground.")        
-      end
+      success = insert_to_best_inventory(result, source)      
     end
 
     if not success then
