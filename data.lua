@@ -1,0 +1,8 @@
+require('__correga__.prototypes.item-groups')
+require('__correga__.prototypes.item')
+require('__correga__.prototypes.recipe')
+require('__correga__.prototypes.decoratives')
+require('__correga__.prototypes.item')
+require('__correga__.prototypes.planet.planet')
+require('__correga__.prototypes.technology')
+require('__correga__.prototypes.tips-and-tricks')
