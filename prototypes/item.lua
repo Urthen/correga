@@ -39,7 +39,7 @@ data:extend({
   {
     type = "item",
     name = "correga-result-power-core",
-    icon = "__space-age__/graphics/icons/metallurgic-science-pack.png",
+    icon = "__space-age__/graphics/icons/agricultural-science-pack.png",
     subgroup = "correga-processes",
     order = "a-c",
     inventory_move_sound = item_sounds.reactor_inventory_move,

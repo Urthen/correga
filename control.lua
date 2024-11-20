@@ -2,8 +2,9 @@
 local function insert_to_best_inventory(stack, entity)
   success = false
   
-  -- Best case, if this is an assembler, just try and put it back into the output.
-  -- Note to self: Always make sure relevant recipes include a 0% probability of all possible results
+  -- Best case, most entities have an output inventory for some reason. Just try and put it back into the output.
+  -- Note to self: Always make sure relevant recipes include a 0% probability of all possible results.
+  -- Otherwise assembler output inventory has a filter that prevents re-insertion.
   if source.get_output_inventory() then
     inventory = source.get_output_inventory()
     inserted = inventory.insert(result)
@@ -19,6 +20,36 @@ local function insert_to_best_inventory(stack, entity)
     end
   end
 
+  -- If this is an inserter, try and put the new stack back somewhere logical
+  if not success and source.type == "inserter" then        
+    -- Seems to always work, since spoiled stacks spoil together, meaning the hand should be empty at this point.
+    -- But, not tested with items that stack greater than one.
+    -- I'm also not sure if it only transfers if it can transfer the full stack. The result just says if the full 
+    -- stack was transferred, but I *think* it should always work out in practice, since the hand should be empty.
+    success = source.held_stack.transfer_stack(stack)    
+
+    if success then
+      game.print("Inserted " .. stack.name .. " into inserter hand")
+    else 
+      -- These code paths not well tested.
+      if source.drop_target then
+        success = insert_to_best_inventory(stack, source.drop_target)
+        if success then
+          game.print("Inserted " .. stack.name .. " into drop target")
+        end
+      end
+
+      if not success then
+        game.print("Inserter drop target missing or filled, spilling " .. stack.name .. " to ground.")
+        game.surfaces[event.surface_index].spill_item_stack({
+          position = source.drop_position,
+          stack = stack
+        })
+      end
+    end
+  end
+
+  -- Fallback, not tested well.
   if not success then
     -- loop through inventories in reverse order, this should in theory insert to the "correct" inventories first
     -- but so far this branch never seems to do anything (either above output inventory works or nothing)
@@ -42,6 +73,7 @@ local function insert_to_best_inventory(stack, entity)
     end
   end
 
+  -- Second fallback, also not tested well.
   if not success then
     -- last ditch effort, also never seems to insert anything
     inserted = source.insert(stack)
@@ -55,6 +87,7 @@ local function insert_to_best_inventory(stack, entity)
     end
   end
 
+  -- Failure.
   if not success then
     game.print("Correga - Bug warning: Could not output all " .. stack.name .. " to any inventory in " .. source.name)        
   end
@@ -78,6 +111,7 @@ local function handle_script_trigger_event(event)
       success = insert_to_best_inventory(result, source)      
     end
 
+    -- If it wasn't in an entity, or we couldn't insert back to the entity, drop it to the ground.
     if not success then
       game.print("Power Core Result spoiled onto the ground!")
       game.surfaces[event.surface_index].spill_item_stack({
