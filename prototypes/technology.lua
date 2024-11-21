@@ -13,7 +13,7 @@ data:extend({
                 use_icon_overlay_constant = true
             },
         },
-        prerequisites = { "railgun", "fusion-reactor" },
+        prerequisites = { "fusion-reactor" },
         unit =
         {
             count = 2000,
@@ -37,8 +37,7 @@ data:extend({
         type = "technology",
         name = "correga-emergency-stablization",
         icon = "__base__/graphics/technology/space-science-pack.png",
-        icon_size = 256,
-        visible_when_disabled = false,        
+        icon_size = 256,     
         essential = true,
         effects =
         {
@@ -58,8 +57,7 @@ data:extend({
         type = "technology",
         name = "correga-core-stablization",
         icon = "__base__/graphics/technology/space-science-pack.png",
-        icon_size = 256,        
-        visible_when_disabled = false,        
+        icon_size = 256,            
         essential = true,
         effects =
         {
@@ -89,6 +87,96 @@ data:extend({
         {
           type = "craft-item",
           item = "correga-power-core"
+        }
+      },
+      {
+        type = "technology",
+        name = "correga-science-pack",
+        icon = "__base__/graphics/technology/space-science-pack.png",
+        icon_size = 256,             
+        essential = true,
+        effects =
+        {
+          {
+            type = "unlock-recipe",
+            recipe = "correga-science-pack",
+          },
+        },
+        prerequisites = { "correga-core-stablization"},
+        research_trigger =
+        {
+          type = "craft-item",
+          item = "correga-stablized-core"
+        }
+      },
+      {
+        type = "technology",
+        name = "correga-experimental-matter-synthesis",
+        icon = "__base__/graphics/technology/space-science-pack.png",
+        icon_size = 256,                     
+        effects =
+        {
+          {
+            type = "unlock-recipe",
+            recipe = "correga-synthesis-stone",
+          },
+          {
+            type = "unlock-recipe",
+            recipe = "correga-synthesis-coal",
+          },
+        },
+        prerequisites = { "correga-science-pack"},
+        unit =
+        {
+            count = 1000,
+            ingredients =
+            {
+                { "automation-science-pack",      2 },
+                { "logistic-science-pack",        2 },
+                { "chemical-science-pack",        2 },
+                { "production-science-pack",      2 },
+                { "utility-science-pack",         2 },
+                { "space-science-pack",           2 },
+                { "metallurgic-science-pack",     2 },
+                { "cryogenic-science-pack",       2 },
+                { "correga-science-pack",         1 }
+            },
+            time = 120
+        }
+      },
+      {
+        type = "technology",
+        name = "correga-power-core-duplication",
+        icon = "__base__/graphics/technology/space-science-pack.png",
+        icon_size = 256,             
+        effects =
+        {
+          {
+            type = "unlock-recipe",
+            recipe = "correga-inert-power-core",
+          },
+          -- {
+          --   type = "unlock-recipe",
+          --   recipe = "correga-power-core-ignition",
+          -- },
+        },
+        prerequisites = { "correga-science-pack"},
+        unit =
+        {
+            count = 500,
+            ingredients =
+            {
+                { "automation-science-pack",      2 },
+                { "logistic-science-pack",        2 },
+                { "chemical-science-pack",        2 },
+                { "production-science-pack",      2 },
+                { "utility-science-pack",         2 },
+                { "space-science-pack",           2 },
+                { "metallurgic-science-pack",     2 },
+                { "cryogenic-science-pack",       2 },
+                { "correga-science-pack",         1 }
+            },
+            time = 120
         }
       },
 })
